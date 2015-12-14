@@ -1,7 +1,7 @@
 \name{erpcz}
 \alias{erpcz}
 \docType{data}
-\title{ERP dataset from a directed forgetting experiment as presented in detail in Sheu, Perthame, Lee and Causeur (2014)}
+\title{ERP dataset from a directed forgetting experiment as presented in detail in Sheu, Perthame, Lee and Causeur (2016)}
 \description{
 The experiment was conducted using an experimental paradigm similar to that described in Lee, Lee and Fawcett (2013). The objective of the study was 
 to examine the electrophysiological process associated with directed forgetting. 
@@ -19,7 +19,7 @@ ERPs from nine electrode positions - 3 each from frontal, central and posterior 
 the ERP curves at electrode CZ (central on the miline). The corresponding experimental covariates (subject and instruction) are provided in the last two columns.
 }
 \source{
-Sheu, C.-F., Perthame, E., Lee Y.-S. and Causeur, D. 2014. Accounting for time dependence in large-scale multiple testing of event-related potential data. Submitted.
+Sheu, C.-F., Perthame, E., Lee Y.-S. and Causeur, D. 2016. Accounting for time dependence in large-scale multiple testing of event-related potential data. To appear in Annals of Applied Statistics.
 }
 \references{
 Lee, Y-S., Lee, H.M., Fawcett, J.-M. (2013). Intentional forgetting reduces color-naming interference: evidence from item-method directed forgetting. 

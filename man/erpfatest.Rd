@@ -5,7 +5,7 @@ Adaptive Factor-Adjustement for multiple testing of ERP data
 }
 \description{
 An adaptive factor-adjusted FDR- and FWER-controlling multiple testing procedures for ERP data.
-The procedure is described in detail in Sheu, Perthame, Lee, and Causeur (2014).
+The procedure is described in detail in Sheu, Perthame, Lee, and Causeur (2016).
 }
 \usage{
 erpfatest(dta, design, design0 = NULL, method = "BH", nbf = NULL, nbfmax = 15, 
@@ -41,7 +41,7 @@ erpfatest(dta, design, design0 = NULL, method = "BH", nbf = NULL, nbfmax = 15,
   \item{maxiter}{Maximum number of iterations in algorithms. Default is 5.}
   \item{verbose}{If TRUE, details are printed along the iterations of the algorithm. Default is FALSE.}
 }
-\details{The method is described in Sheu et al. (2014). It combines a decorrelation step based on a regression factor model as
+\details{The method is described in Sheu et al. (2016). It combines a decorrelation step based on a regression factor model as
 in Leek and Storey (2008), Friguet et al. (2009) or Sun et al. (2012) with an adaptive estimation of the ERP signal.
 The multiple testing corrections of the p-values are described in the help documentation of the function p.adjust of
 package stats.}
@@ -67,7 +67,7 @@ Friguet, C., Kloareg, M., Causeur, D. 2009. A factor model approach to multiple 
 
 Leek, J.T., Storey, J.D. 2008. A general framework for multiple testing dependence. Proceedings of the National Academy of Sciences of the United States of America, 105, 18718-18723.
 
-Sheu, C.-F., Perthame, E., Lee Y.-S. and Causeur, D. 2014. Accounting for time dependence in large-scale multiple testing of event-related potential data. Submitted.
+Sheu, C.-F., Perthame, E., Lee Y.-S. and Causeur, D. 2016. Accounting for time dependence in large-scale multiple testing of event-related potential data. To appear in Annals of Applied Statistics.
 
 Storey, J. D., Tibshirani, R. 2003. Statistical significance for genome-wide experiments. Proceedings of the National Academy of Sciences of the United States of America, 100, 9440-9445.
 

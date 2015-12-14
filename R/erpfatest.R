@@ -2,49 +2,64 @@ erpfatest <-
 function(dta,design,design0=NULL,method="BH",nbf=NULL,nbfmax=15,alpha=0.05,pi0=1,
                                   wantplot=FALSE,s0=NULL,min.err=1e-03,maxiter=5,verbose=FALSE) {  
                                   
-   ifa = function(Psi,B) {    # Technical function: Woodbury's identity to invert Psi + BB'
-      nbf = ncol(B)
-      Phi = rep(0,length(Psi))
-      Phi[abs(Psi)>1e-05] = 1/Psi[abs(Psi)>1e-05]
-      G = diag(nbf)+t(B)%*%diag(Phi)%*%B
-      diag(Phi) - diag(Phi)%*%B%*%solve(G)%*%t(B)%*%diag(Phi)
+   ifa = function(Psi, B) {
+     if (class(B) == "numeric") 
+         B = matrix(B, ncol = 1)
+     q = ncol(B)
+     Phi = rep(0, length(Psi))
+     Phi[abs(Psi) > 1e-05] = 1/Psi[abs(Psi) > 1e-05]
+     PhiB = tcrossprod(Phi, rep(1, q))
+     PhiB = PhiB * B
+     G = diag(q) + t(B) %*% PhiB
+     GinvtPhiB = tcrossprod(solve(G), PhiB)
+     Phib2 = tcrossprod(PhiB, t(GinvtPhiB))
+     iS = diag(Phi) - Phib2
+     PhiB2 = crossprod(PhiB, B)
+     GinvtPhiB2 = crossprod(solve(G), PhiB2)
+     Phib2 = tcrossprod(PhiB, t(GinvtPhiB2))
+     iSB = PhiB - Phib2
+     return(list(iS = iS, iSB = iSB))
    }
 
    emfa = function (data, nbf, min.err = 1e-06,verbose=FALSE) {
-      n = nrow(data)
+
       m = ncol(data)
-      S = (t(data)%*%data)/(n-1)
+      n = nrow(data)
+      mdta = t(rep(1,n))%*%data/n
+      vdta = (t(rep(1,n))%*%data^2/n)-mdta^2
+      sddta = sqrt(n/(n-1))*sqrt(vdta)
+      cdta = data-rep(1,n)%*%mdta
       if (nbf == 0) {
          B = NULL
          Psi = rep(1, m)
          Factors = NULL
       }
       if (nbf > 0) {
-         # print(paste("Fitting EM Factor Analysis Model with", nbf,"factors"))
-         eig = svd((1/sqrt((n - 1))) * t(data))
-         evectors = eig$u[, 1:nbf]
-         evalues = eig$d^2
+         svddta = svd(cdta/sqrt(n-1),nv=n)
+         evalues = (svddta$d[1:nbf])^2
+         evectors = svddta$v[,1:nbf]
+
          if (nbf > 1) 
             B = evectors[, 1:nbf] %*% diag(sqrt(evalues[1:nbf]))
          if (nbf == 1) 
             B = matrix(evectors, nrow = m, ncol = 1) * sqrt(evalues[1])
-         Psi = diag(S) - apply(B^2, 1, sum)
+         Psi = sddta^2 - (B^2%*%rep(1,nbf))[,1]
          crit = 1
          while (crit > min.err) {
             iS = ifa(Psi,B)
-            Cyz = S%*%iS%*%B
-            Czz = t(B)%*%iS%*%S%*%iS%*%B+diag(nbf)-t(B)%*%iS%*%B
+            xiSB = cdta%*%iS$iSB
+            Cyz = t(cdta)%*%xiSB/(n-1)
+            Czz = t(iS$iSB)%*%Cyz+diag(nbf)-t(B)%*%iS$iSB
             Bnew = Cyz%*%solve(Czz)
-            Psinew = diag(S-Bnew%*%t(Cyz))
+            Psinew = sddta^2 - (Bnew^2%*%rep(1,nbf))[,1]
             crit = mean((Psi - Psinew)^2)
-            # print(paste("Objective criterion:",round(crit,4),sep=""))
             B = Bnew
             Psi = Psinew
          }
          sB = scale(t(B), center = FALSE, scale = sqrt(Psi))
          G = solve(diag(nbf) + sB %*% t(sB))
          sB = scale(t(B), center = FALSE, scale = Psi)
-         Factors = data%*%t(sB)%*%t(G)
+         Factors = cdta%*%t(sB)%*%t(G)
       }
       res = list(B = B, Psi = Psi,Factors=Factors)
       return(res)
@@ -213,7 +228,7 @@ function(dta,design,design0=NULL,method="BH",nbf=NULL,nbfmax=15,alpha=0.05,pi0=1
             if (nbf==1) B0 = matrix(B0,ncol=1)
             iSxx = ifa(Psi[fs0i],B0)
             Sxy = (B0%*%t(B[-fs0i,]))
-            betaSigma0 = iSxx%*%Sxy
+            betaSigma0 = iSxx$iS%*%Sxy
             beta0 = beta
             beta0[,-fs0i] = beta[,fs0i]%*%betaSigma0 
             betaSig = beta-beta0  
@@ -235,7 +250,7 @@ function(dta,design,design0=NULL,method="BH",nbf=NULL,nbfmax=15,alpha=0.05,pi0=1
          designz0 = cbind(design[,-idsignal],Factors)
          Projz0 = designz0%*%solve(t(designz0)%*%designz0)%*%t(designz0)
          designz1 = cbind(design[,-idsignal],Factors,design[,idsignal])
-         idsignalz1 = (ncol(designz0)+1):(ncol(designz0)+length(idsignal))
+         idsignalz1 = idsignal+nbf
          pdesignz1 = solve(t(designz1)%*%designz1)%*%t(designz1)
          rdf0 = nrow(designz0)-ncol(designz0)
          rdf1 = nrow(designz1)-ncol(designz1)
@@ -295,7 +310,7 @@ function(dta,design,design0=NULL,method="BH",nbf=NULL,nbfmax=15,alpha=0.05,pi0=1
                if (nbf==1) B0 = matrix(B0,ncol=1)
                iSxx = ifa(Psi[fs0],B0)
                Sxy = (B0%*%t(B[-fs0,]))
-               betaSigma0 = iSxx%*%Sxy
+               betaSigma0 = iSxx$iS%*%Sxy
                beta0 = beta
                beta0[,-fs0] = beta[,fs0]%*%betaSigma0 
                betaSig = beta-beta0  
@@ -325,7 +340,7 @@ function(dta,design,design0=NULL,method="BH",nbf=NULL,nbfmax=15,alpha=0.05,pi0=1
          designz0 = cbind(design[,-idsignal],Factors)
          Projz0 = designz0%*%solve(t(designz0)%*%designz0)%*%t(designz0)
          designz1 = cbind(design[,-idsignal],Factors,design[,idsignal])
-         idsignalz1 = (ncol(designz0)+1):(ncol(designz0)+length(idsignal))
+         idsignalz1 = idsignal+nbf
          pdesignz1 = solve(t(designz1)%*%designz1)%*%t(designz1)
          rdf0 = nrow(designz0)-ncol(designz0)
          rdf1 = nrow(designz1)-ncol(designz1)

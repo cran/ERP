@@ -52,7 +52,7 @@ Sarkar, S. (1998). Some probability inequalities for ordered MTP2 random variabl
 
 Sarkar, S., and Chang, C. K. (1997). Simes' method for multiple hypothesis testing with positively dependent test statistics. Journal of the American Statistical Association, 92, 1601-1608.
 
-Sheu, C.-F., Perthame, E., Lee Y.-S. and Causeur, D. (2014). Accounting for time dependence in large-scale multiple testing of event-related potential data. Submitted.
+Sheu, C.-F., Perthame, E., Lee Y.-S. and Causeur, D. (2016). Accounting for time dependence in large-scale multiple testing of event-related potential data. To appear in Annals of Applied Statistics.
 
 Wright, S. P. (1992). Adjusted P-values for simultaneous inference. Biometrics, 48, 1005-1013.
 }

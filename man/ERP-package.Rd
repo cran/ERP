@@ -7,13 +7,13 @@ Significance analysis of ERP data
 }
 \description{
 The package provides multiple testing procedures designed for Event-Related Potentials (ERP) data in a linear model
-framework. These procedures are reviewed and compared in Sheu, Perthame, Lee, & Causeur (2014).
+framework. These procedures are reviewed and compared in Sheu, Perthame, Lee and Causeur (2016).
 Some of the methods gathered in the package are the classical FDR- and FWER-controlling procedures, also available
 using function p.adjust. The package also implements the Guthrie-Buchwald procedure (Guthrie and Buchwald, 1991),
 which accounts for the auto-correlation among t-tests to control erroneous detections of short intervals.
-The Adaptive Factor-Adjustment method is an extension of the method described in Causeur, Chu, Hsieh, & Sheu (2012).
+The Adaptive Factor-Adjustment method is an extension of the method described in Causeur, Chu, Hsieh and Sheu (2012).
 It assumes a factor model for the correlation among tests and combines adptatively the estimation of the signal and
-the updtating of the dependence modelling (see Sheu et al., 2014 for further details).
+the updtating of the dependence modelling (see Sheu et al., 2016 for further details).
 }
 \details{
 \tabular{ll}{
@@ -57,7 +57,7 @@ Sarkar, S. (1998). Some probability inequalities for ordered MTP2 random variabl
 
 Sarkar, S., and Chang, C. K. (1997). Simes' method for multiple hypothesis testing with positively dependent test statistics. Journal of the American Statistical Association, 92, 1601-1608.
 
-Sheu, C.-F., Perthame, E., Lee Y.-S. and Causeur, D. (2014). Accounting for time dependence in large-scale multiple testing of event-related potentials data. Submitted.
+Sheu, C.-F., Perthame, E., Lee Y.-S. and Causeur, D. (2016). Accounting for time dependence in large-scale multiple testing of event-related potentials data. To appear in Annals of Applied Statistics.
 
 Wright, S. P. (1992). Adjusted P-values for simultaneous inference. Biometrics, 48, 1005-1013.
 }

@@ -36,7 +36,7 @@ designed to control erroneous detections of short significant intervals but not 
 \references{
 Guthrie, D. and Buchwald, J.S. (1991). Significance testing of difference potentials. Psychophysiology, 28, 240-244.
 
-Sheu, C.-F., Perthame, E., Lee Y.-S. and Causeur, D. (2014). Accounting for time dependence in large-scale multiple testing of event-related potentials data. Submitted.
+Sheu, C.-F., Perthame, E., Lee Y.-S. and Causeur, D. (2016). Accounting for time dependence in large-scale multiple testing of event-related potentials data. To appear in Annals of Applied Statistics.
 }
 \author{
 David Causeur - david.causeur@agrocampus-ouest.fr and Mei-Chen Chu (National Cheng-Kung University, Tainan, Taiwan)

@@ -1,2 +1,7 @@
-exportPattern(".")
-import(fdrtool,mnormt)
+export(erpavetest,erpfatest,erptest,erpplot,gbtest)
+importFrom(stats,p.adjust,pf,qnorm,ksmooth,qt,quantile,acf)
+importFrom(fdrtool,pval.estimate.eta0)
+importFrom(mnormt,biv.nt.prob,rmt)
+importFrom(graphics,plot,matplot,points)
+importFrom(grDevices,dev.new,dev.off)
+
