@@ -27,7 +27,7 @@ potentials in a stop-signal task. International Journal of Psychophysiology, 91(
 }
 \references{
 
-Causeur, D., Sheu, C.-F., Perthame, E. and Rufini, F. (2017) A Generalized Functional Likelihood-Ratio Test for ERP Signal Detection. Submitted paper.
+Causeur, D., Sheu, C.-F., Perthame, E. and Rufini, F. (2018). A functional generalized F-test for signal detection with applications to event-related potentials significance analysis. Submitted.
 
 Logan, G. D., Cowan, W., and Davis, K. (1984), On the ability to inhibit simple and choice reaction
 time responses: a model and a method. Journal of Experimental Psychology: Human Perception

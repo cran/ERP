@@ -41,7 +41,7 @@ in package \code{fda.usc}.
 \item{pval.Fols}{p-value of the LRT statistics ignoring time-dependence across pointwise F-tests.}
 }
 \references{
-Causeur, D., Sheu, C.-F., Perthame, E. and Rufini, F. (2018). A Generalized Functional Likelihood-Ratio Test for Event-Related Potentials Signal Detection. Submitted
+Causeur, D., Sheu, C.-F., Perthame, E. and Rufini, F. (2018). A functional generalized F-test for signal detection with applications to event-related potentials significance analysis. Submitted.
 }
 \author{
 David Causeur, IRMAR, UMR 6625 CNRS, Agrocampus Ouest, Rennes, France.

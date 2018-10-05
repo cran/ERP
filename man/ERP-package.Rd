@@ -50,7 +50,7 @@ Benjamini, Y., and Yekutieli, D. (2001). The control of the false discovery rate
 
 Causeur, D., Chu, M.-C., Hsieh, S. and Sheu, C.-F. (2012). A factor-adjusted multiple testing procedure for ERP data analysis. Behavior Research Methods, 44, 635-643.
 
-Causeur, D., Sheu, C.-F., Perthame, E. and Rufini, F. (2018). A Generalized Functional Likelihood-Ratio Test for Event-Related Potentials Signal Detection. Submitted.
+Causeur, D., Sheu, C.-F., Perthame, E. and Rufini, F. (2018). A functional generalized F-test for signal detection with applications to event-related potentials significance analysis. Submitted.
 
 Friguet, C., Kloareg, M. and Causeur, D. (2009). A factor model approach to multiple testing under dependence. Journal of the American Statistical Association, 104, 1406-1415.
 

@@ -53,7 +53,7 @@ This vignette aims to demonstrate how to use the 'ERP' package for significance 
 of an example from a study investigating neural correlates of impulsive behavior (Shen, Lee, \& Chen, 2014). ERPs are voltage changes along the 
 scalp time-locked to some physical or mental events in the ongoing 
 electrical brain activity recorded as electroencephalogram (EEG). ERPs are complex waveforms with highly correlated components in time corresponding 
-to brief bursts of synchronized cortical activities. The current version of the 'ERP' package implements the adaptive factor-adjustment (AFA) procedure (Sheu, Perthame, Lee, \& Causeur, 2016) and a generalized functional likelihood ratio test developed in Causeur, Sheu, Perthame, \& Rufini (under review) for detecting and identifying ERP signals. The procedure proposed by Buthrie \& Buchwald (1991) for significance testing of difference potentials is also included in the package for comparison.
+to brief bursts of synchronized cortical activities. The current version of the 'ERP' package implements the adaptive factor-adjustment (AFA) procedure (Sheu, Perthame, Lee, \& Causeur, 2016) and a generalized functional likelihood ratio test developed in Causeur, Sheu, Perthame, \& Rufini (submitted) for detecting and identifying ERP signals. The procedure proposed by Guthrie \& Buchwald (1991) for significance testing of difference potentials is also included in the package for comparison.
 
 # ERPs and impulsivity
 
@@ -254,7 +254,7 @@ design0 <- model.matrix( ~ C(Subject, sum)/Group + Group + Condition +
 ```
 
 The function 'erpFtest' implements a functional F-test presented in 
-Causeur, Sheu, Perthame, \& Rufini (under review), which accounts for 
+Causeur, Sheu, Perthame, \& Rufini (submitted), which accounts for 
 the strong time dependence across the residuals of the model. 
 The complexity of time dependence is handled by adjusting the number of factors in the factor model. The functional F-test assumes time independence when the number of factors is zero.
 Therefore, the first step of the testing procedure is to select the number of factors between 0 and the residual degrees of freedom of the model, in which case the regression factor model is saturated. 
@@ -484,7 +484,7 @@ The function 'erpfatest' is again called with the chosen number of factors. The 
 fabh <- erpfatest(erpdta.hcpz, design, design0, nbf = nbf)
 ```
 
-For the series of pointwise test statistics, the least-squares estimation of the effect curve may also be affected by a too strong regularity due to the strong time dependence among the residuals of the linear model. The component 'fattest$signal' contains a correlation-adjusted estimation of the effect curve developed in Causeur, Sheu, Perthame, \& Rufini (under review): 
+For the series of pointwise test statistics, the least-squares estimation of the effect curve may also be affected by a too strong regularity due to the strong time dependence among the residuals of the linear model. The component 'fattest$signal' contains a correlation-adjusted estimation of the effect curve developed in Causeur, Sheu, Perthame \& Rufini (submitted): 
 
 ```{r eval=TRUE,fig.cap=paste("Fig. 11: Fitted 'Condition' effect curve at channel CPZ for high impulsivity group with significant intervals identified by 'erpfatest'.")}
 erpplot(erpdta.hcpz, design, effect = ncol(design), lwd = 2, 
@@ -513,8 +513,8 @@ Causeur, D., Chu, M.-C., Hsieh, S., \& Sheu, C.-F. (2012).
 A factor-adjusted multiple testing procedure for ERP data analysis.
 *Behavior Research Methods*, 44(3), 635-43.
 
-Causeur, D., Sheu, C.-F., Perthame, E. \& Rufini, F. (under review). 
-A generalized functional likelihood-ratio test for event-related potentials signal detection. Submitted to *Biostatistics*.
+Causeur, D., Sheu, C.-F., Perthame, E. \& Rufini, F.  
+A functional generalized F-test for signal detection with applications to event-related potentials significance analysis. Submitted.
 
 Friguet, C., Kloareg, M., & Causeur, D. (2009).
 A factor model approach to multiple testing under dependence, 
