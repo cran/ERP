@@ -1,7 +1,5 @@
 ifa <-
 function(Psi, B) {
-  if (class(B) == "numeric") 
-    B = matrix(B, ncol = 1)
   Psi = as.vector(Psi)
   m = nrow(B)
   nbf = ncol(B)

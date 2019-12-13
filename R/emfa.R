@@ -16,9 +16,8 @@ function(dta, nbf, min.err = 1e-06, verbose = FALSE, svd.method=c("fast.svd","ir
     if (svd.method=="fast.svd") svddta = fast.svd(cdta/sqrt(n - 1))
     if (svd.method=="irlba") svddta = irlba(cdta/sqrt(n - 1),nv=nbf)
     evalues = (svddta$d[1:nbf])^2
-    evectors = svddta$v[, 1:nbf]
-    if (nbf > 1) B = evectors[, 1:nbf] %*% diag(sqrt(evalues[1:nbf]))
-    if (nbf == 1) B = matrix(evectors, nrow = m, ncol = 1) * sqrt(evalues[1])
+    evectors = svddta$v[, 1:nbf, drop = FALSE]
+    B = evectors %*% diag(sqrt(evalues),nrow=nbf,ncol=nbf)
     Psi = as.vector(sddta^2 - (B^2 %*% rep(1, nbf))[, 1])
     Psi[Psi<=1e-16] = 1e-16
     crit = 1

@@ -17,43 +17,43 @@ fastiSB = function(mPsi, lB) {
   return(list(iSB=liSB,svdBeta=lsvdBeta))
 }
 
-fastfa = function(ldta, nbf, min.err = 1e-02, verbose = FALSE) {  # data are centered, their type is matrix, nbf cannot be zero
-  m = ncol(ldta[[1]])
-  n = nrow(ldta[[1]])
-  nbdta = length(ldta)
-  vdta = matrix(unlist(lapply(ldta,function(dta,n) (crossprod(rep(1, n),dta^2)/n),n=n)),nrow=nbdta,byrow=TRUE)
-  sddta = sqrt(n/(n - 1)) * sqrt(vdta)
-  ltdta = lapply(ldta,t)
-  lsvddta = lapply(ltdta,function(x,n) fast.svd(x/sqrt(n-1)),n=n)
-  if (nbf > 1) lB = lapply(lsvddta,function(s,nbf,m) s$u[, 1:nbf]*tcrossprod(rep(1,m),s$d[1:nbf]),nbf=nbf,m=m)
-  if (nbf == 1) lB = lapply(lsvddta,function(s,nbf,m) matrix(s$u[,1], nrow = m, ncol = 1) * s$d[1],nbf=nbf,m=m)
-  lB2 = lapply(lB,function(b,nbf) (b^2 %*% rep(1, nbf))[, 1],nbf=nbf)
-  mB2 = matrix(unlist(lB2),nrow=length(ldta),byrow=TRUE)
-  mPsi = sddta^2 - mB2
-  crit = rep(1,length(ldta))
-  mPsi[mPsi<=1e-16] = 1e-16
-  while (max(crit) > min.err) {
-    liSB = fastiSB(mPsi,lB)
-    lxiSB = Map(crossprod,ltdta,liSB$iSB)
-    lCyz = Map(function(x,y,n) crossprod(y,x)/(n-1),y=ldta,x=lxiSB,n=n)
-    lCzz1 = Map(crossprod,liSB$iSB,lCyz) 
-    lCzz2 = Map(crossprod,lB,liSB$iSB)
-    lCzz2 = lapply(lCzz2,function(M,nbf) diag(nbf)-M,nbf=nbf) 
-    lCzz = Map("+",lCzz1,lCzz2)
-    liCzz = lapply(lCzz,solve)
-    lBnew = Map(tcrossprod,lCyz,liCzz) 
-    lB2 = lapply(lBnew,function(b,nbf) (b^2 %*% rep(1, nbf))[, 1],nbf=nbf)
-    mB2 = matrix(unlist(lB2),nrow=length(ldta),byrow=TRUE)
-    mPsinew = sddta^2 - mB2
-    crit = ((mPsi - mPsinew)^2)%*%rep(1,m)/m
-    lB = lBnew
-    mPsi = mPsinew
-    mPsi[mPsi<=1e-16] = 1e-16
-    if (verbose) print(paste("Convergence criterion: ",signif(max(crit),digits=ceiling(-log10(min.err))),sep=""))
-  }
-  liSB = fastiSB(mPsi,lB)
-  res = list(B = lB, Psi = mPsi, svdbeta = liSB$svdBeta)
-  return(res)
+fastfa = function(ldta, nbf, min.err = 1e-02, verbose = FALSE,svd.method=c("fast.svd","irlba")) {  # data are centered, their type is matrix, nbf cannot be zero
+   m = ncol(ldta[[1]])
+   n = nrow(ldta[[1]])
+   nbdta = length(ldta)
+   vdta = matrix(unlist(lapply(ldta,function(dta,n) (crossprod(rep(1, n),dta^2)/n),n=n)),nrow=nbdta,byrow=TRUE)
+   sddta = sqrt(n/(n - 1)) * sqrt(vdta)
+   ltdta = lapply(ldta,t)
+   if (svd.method=="fast.svd") lsvddta = lapply(ltdta,function(x,n) fast.svd(x/sqrt(n-1)),n=n)
+   if (svd.method=="irlba") lsvddta = lapply(ltdta,function(x,n,nbf) irlba(x/sqrt(n-1),nu=nbf),n=n,nbf=nbf)
+   lB = lapply(lsvddta,function(s,nbf,m) s$u[, 1:nbf, drop=FALSE]*tcrossprod(rep(1,m),s$d[1:nbf]),nbf=nbf,m=m)
+   lB2 = lapply(lB,function(b,nbf) (b^2 %*% rep(1, nbf))[, 1],nbf=nbf)
+   mB2 = matrix(unlist(lB2),nrow=length(ldta),byrow=TRUE)
+   mPsi = sddta^2 - mB2
+   crit = rep(1,length(ldta))
+   mPsi[mPsi<=1e-16] = 1e-16
+   while (max(crit) > min.err) {
+      liSB = fastiSB(mPsi,lB)
+      lxiSB = Map(crossprod,ltdta,liSB$iSB)
+      lCyz = Map(function(x,y,n) crossprod(y,x)/(n-1),y=ldta,x=lxiSB,n=n)
+      lCzz1 = Map(crossprod,liSB$iSB,lCyz) 
+      lCzz2 = Map(crossprod,lB,liSB$iSB)
+      lCzz2 = lapply(lCzz2,function(M,nbf) diag(nbf)-M,nbf=nbf) 
+      lCzz = Map("+",lCzz1,lCzz2)
+      liCzz = lapply(lCzz,solve)
+      lBnew = Map(tcrossprod,lCyz,liCzz) 
+      lB2 = lapply(lBnew,function(b,nbf) (b^2 %*% rep(1, nbf))[, 1],nbf=nbf)
+      mB2 = matrix(unlist(lB2),nrow=length(ldta),byrow=TRUE)
+      mPsinew = sddta^2 - mB2
+      crit = ((mPsi - mPsinew)^2)%*%rep(1,m)/m
+      lB = lBnew
+      mPsi = mPsinew
+      mPsi[mPsi<=1e-16] = 1e-16
+      if (verbose) print(paste("Convergence criterion: ",signif(max(crit),digits=ceiling(-log10(min.err))),sep=""))
+   }
+   liSB = fastiSB(mPsi,lB)
+   res = list(B = lB, Psi = mPsi, svdbeta = liSB$svdBeta)
+   return(res)
 }
 
 fstat = function(erpdta,design,design0) {
@@ -147,7 +147,7 @@ update.beta = function(erpdta,design,design0,nbf,fs0,min.err,verbose) {
      res = erpdta-fit   
      meanres = (crossprod(rep(1,n),res)/n)[1,]
      cres = res-rep(1,n)%*%t(meanres)
-     fa = emfa(cres,nbf=nbf,min.err=min.err,verbose=verbose)
+     fa = emfa(cres,nbf=nbf,min.err=min.err,verbose=verbose,svd.method=svd.method)
      Psi = fa$Psi
      B = fa$B
      B0 = B[fs0, ,drop=FALSE]
@@ -169,7 +169,7 @@ update.beta = function(erpdta,design,design0,nbf,fs0,min.err,verbose) {
   cres = res-rep(1,n)%*%t(meanres)
   sdres = sqrt(crossprod(rep(1,n),cres^2)/(n-1))[1,] 
   scres = cres/tcrossprod(rep(1,n),sdres)
-  fa = emfa(scres,nbf=nbf,min.err=min.err,verbose=verbose)
+  fa = emfa(scres,nbf=nbf,min.err=min.err,verbose=verbose,svd.method=svd.method)
   Psi = fa$Psi
   B = fa$B
   sB = t(B)/tcrossprod(rep(1,nbf),sqrt(Psi))
@@ -239,7 +239,7 @@ pval.fstatz = function(F,erpdta,design,design0,nbf,fs0,nsamples,min.err,verbose)
      lres = lapply(lfit,function(fit,y) y-fit,y=erpdta)   
      lmeanres = lapply(lres,function(res,n) (crossprod(rep(1,n),res)/n)[1,],n=n)
      lcres = Map(function(res,meanres,n) res-rep(1,n)%*%t(meanres),lres,lmeanres,n=n)
-     lfa = fastfa(lcres,nbf=nbf,min.err=min.err,verbose=FALSE)
+     lfa = fastfa(lcres,nbf=nbf,min.err=min.err,verbose=FALSE,svd.method=svd.method)
      lPsi = as.list(data.frame(t(lfa$Psi)))
      lB = lfa$B
      lB0 = lapply(lB,function(B,fs0) B[fs0, ,drop=FALSE],fs0=fs0)
@@ -275,7 +275,7 @@ pval.fstatz = function(F,erpdta,design,design0,nbf,fs0,nsamples,min.err,verbose)
   lcres = Map(function(res,meanres,n) res-rep(1,n)%*%t(meanres),lres,lmeanres,n=n)
   lsdres = lapply(lcres,function(res,n) sqrt(crossprod(rep(1,n),res^2)/(n-1))[1,],n=n) 
   lscres = Map(function(cres,sdres,n) cres/tcrossprod(rep(1,n),sdres),lcres,lsdres,n=n)
-  lfa = fastfa(lscres,nbf=nbf,min.err=min.err,verbose=FALSE)
+  lfa = fastfa(lscres,nbf=nbf,min.err=min.err,verbose=FALSE,svd.method=svd.method)
   lPsi = as.list(data.frame(t(lfa$Psi)))
   lB = lfa$B
   lsB = Map(function(B,Psi) t(B)/tcrossprod(rep(1,ncol(B)),sqrt(Psi)),lB,lPsi)
@@ -324,6 +324,7 @@ pval.fstatz = function(F,erpdta,design,design0,nbf,fs0,nsamples,min.err,verbose)
     method = match.arg(method, choices = c("BH", "holm", "hochberg", 
         "hommel", "bonferroni", "BY", "fdr", "none"))
     significance = match.arg(significance,c("Satterthwaite","none"))
+    svd.method = match.arg(svd.method,choices=c("fast.svd","irlba"))
     if (typeof(nsamples) != "double") 
       stop("nsamples sould be an integer, usually larger than 200.")
     if (is.null(design0)) 

@@ -13,16 +13,16 @@ fastiSB = function(mPsi, lB) {
    return(list(iSB=liSB,svdBeta=lsvdBeta))
 }
 
-fastfa = function(ldta, nbf, min.err = 1e-02, verbose = FALSE) {  # data are centered, their type is matrix, nbf cannot be zero
+fastfa = function(ldta, nbf, min.err = 1e-02, verbose = FALSE,svd.method=c("fast.svd","irlba")) {  # data are centered, their type is matrix, nbf cannot be zero
    m = ncol(ldta[[1]])
    n = nrow(ldta[[1]])
    nbdta = length(ldta)
    vdta = matrix(unlist(lapply(ldta,function(dta,n) (crossprod(rep(1, n),dta^2)/n),n=n)),nrow=nbdta,byrow=TRUE)
    sddta = sqrt(n/(n - 1)) * sqrt(vdta)
    ltdta = lapply(ldta,t)
-   lsvddta = lapply(ltdta,function(x,n) fast.svd(x/sqrt(n-1)),n=n)
-   if (nbf > 1) lB = lapply(lsvddta,function(s,nbf,m) s$u[, 1:nbf]*tcrossprod(rep(1,m),s$d[1:nbf]),nbf=nbf,m=m)
-   if (nbf == 1) lB = lapply(lsvddta,function(s,nbf,m) matrix(s$u[,1], nrow = m, ncol = 1) * s$d[1],nbf=nbf,m=m)
+   if (svd.method=="fast.svd") lsvddta = lapply(ltdta,function(x,n) fast.svd(x/sqrt(n-1)),n=n)
+   if (svd.method=="irlba") lsvddta = lapply(ltdta,function(x,n,nbf) irlba(x/sqrt(n-1),nu=nbf),n=n,nbf=nbf)
+   lB = lapply(lsvddta,function(s,nbf,m) s$u[, 1:nbf, drop=FALSE]*tcrossprod(rep(1,m),s$d[1:nbf]),nbf=nbf,m=m)
    lB2 = lapply(lB,function(b,nbf) (b^2 %*% rep(1, nbf))[, 1],nbf=nbf)
    mB2 = matrix(unlist(lB2),nrow=length(ldta),byrow=TRUE)
    mPsi = sddta^2 - mB2
@@ -144,8 +144,7 @@ fastfa = function(ldta, nbf, min.err = 1e-02, verbose = FALSE) {  # data are cen
     lsigma = lapply(lsdres,function(sdres) rep(sqrt(mean(sdres^2)),length(sdres)))
     lmsdres = lapply(lsdres,function(sdres,p) tcrossprod(rep(1,p),sdres),p=length(idsignal))
     lmsigma = lapply(lsigma,function(sdres,p) tcrossprod(rep(1,p),sdres),p=length(idsignal))
-    lbeta.ols = lapply(ltuy,function(tuy,m,select) crossprod(m,tuy)[select,],m=t(vid),select=idsignal)
-    if (length(idsignal)==1) lbeta.ols = lapply(lbeta.ols,function(beta) matrix(beta,nrow=1))
+    lbeta.ols = lapply(ltuy,function(tuy,m,select) crossprod(m,tuy)[select,,drop=FALSE],m=t(vid),select=idsignal)
     lb.ols = lapply(lbeta.ols,function(beta,m) crossprod(m,beta),m=t(sqrtcz))
     lbh.ols = Map("/",lb.ols,lmsigma)
     f0.ols = unlist(lapply(lbh.ols,function(b.ols) mean(b.ols^2)))
@@ -170,7 +169,7 @@ fastfa = function(ldta, nbf, min.err = 1e-02, verbose = FALSE) {  # data are cen
    }
 
    if (nbf>0) {
-      fa = emfa(scres,nbf=nbf,min.err=min.err,verbose=verbose)            
+      fa = emfa(scres,nbf=nbf,min.err=min.err,verbose=verbose,svd.method=svd.method)            
       Lambda = fa$B
       Psi = fa$Psi
       Phi = 1/sqrt(Psi)
@@ -198,7 +197,7 @@ fastfa = function(ldta, nbf, min.err = 1e-02, verbose = FALSE) {  # data are cen
       if (verbose) print("Starting Monte-Carlo estimation of the p-value")
       lmsdres = lapply(lsdres,function(sdres,n) tcrossprod(rep(1,n),sdres),n=n) 
       lscres = Map("/",lres,lmsdres) 
-      lfa = fastfa(lscres,nbf=nbf,min.err=min.err,verbose=FALSE)
+      lfa = fastfa(lscres,nbf=nbf,min.err=min.err,verbose=FALSE,svd.method=svd.method)
       lPhi = as.data.frame(t(1/sqrt(lfa$Psi)))
       lmPhi = lapply(lPhi,function(x,nbf) tcrossprod(x,rep(1,nbf)),nbf=nbf)
       lbeta = Map("*",lfa$B,lmPhi)
@@ -218,7 +217,7 @@ fastfa = function(ldta, nbf, min.err = 1e-02, verbose = FALSE) {  # data are cen
       subsample = sample(1:nsamples,200)
       lmsdres = lapply(lsdres[subsample],function(sdres,n) tcrossprod(rep(1,n),sdres),n=n) 
       lscres = Map("/",lres[subsample],lmsdres) 
-      lfa = fastfa(lscres,nbf=nbf,min.err=min.err,verbose=FALSE)
+      lfa = fastfa(lscres,nbf=nbf,min.err=min.err,verbose=FALSE,svd.method=svd.method)
       lPhi = as.data.frame(t(1/sqrt(lfa$Psi)))
       lmPhi = lapply(lPhi,function(x,nbf) tcrossprod(x,rep(1,nbf)),nbf=nbf)
       lbeta = Map("*",lfa$B,lmPhi)
